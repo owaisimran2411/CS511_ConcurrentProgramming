@@ -1,3 +1,9 @@
+/*
+ * Name: Muhammad Owais Imran
+ * Course Code: CS511-A
+ * Assignment: 01 (Threads)
+ * Due Date: Sep 17th, 2023
+ */
 import java.io.*;
 import java.util.*;
 
@@ -21,7 +27,19 @@ public class TextSwap {
 
     private static Interval[] getIntervals(int numChunks, int chunkSize) {
         // TODO: Implement me!
-        return null;
+
+        /* Steps to implement this getIntervals method 
+            1. Initialize an array of Intervals type having length = numChunks
+            2. Iterate according to the size of array and append the coordinates in Interval array object based on some mathematical formula
+            3. Return the array 
+        */
+
+        Interval[] fileIntervals = new Interval[numChunks];
+        for(int i=0; i<numChunks; i++) {
+            fileIntervals[i] = new Interval(i*chunkSize, (i*chunkSize)+chunkSize-1);
+        }
+
+        return fileIntervals;
     }
 
     private static List<Character> getLabels(int numChunks) {
