@@ -55,15 +55,53 @@ public class TextSwap {
         return labels;
     }
 
+    // helper method to map a given label to its corresponding integer index to access the chunk of data
+    private static int labelToIndexMapper(char label) {
+        int index = label;
+        index -= 97;
+        return index;
+    }
+
     private static char[] runSwapper(String content, int chunkSize, int numChunks) {
         List<Character> labels = getLabels(numChunks);
         Interval[] intervals = getIntervals(numChunks, chunkSize);
         // TODO: Order the intervals properly, then run the Swapper instances.
-        return null;
+        
+        /*
+         * Steps for Implementation:
+         *  1. Reordering the intervals variable based on new label mapping obtained
+         *  2. Initialize an empty buffer
+         *  3. Executing the swapper instance
+         *  4. Wait for all threads to complete execution
+         *  5. return the newly filled buffer
+         */
+        Interval[] newIntervals = new Interval[numChunks];
+        for (int i=0; i<numChunks; i++) {
+            int indexPosition = labelToIndexMapper(labels.get(i));
+            newIntervals[i] = new Interval(intervals[indexPosition].getX(), intervals[indexPosition].getY());
+            System.out.println(labels.get(i) + "  "  + indexPosition);
+            System.out.println("New Interval:" + newIntervals[i].toString());
+        }
+        char[] buffer = new char[chunkSize*numChunks];
+        
+        for (int i=0; i<numChunks; i++) {
+            Swapper swapper = new Swapper(newIntervals[i], content, buffer, i*chunkSize);
+            Thread thread = new Thread(swapper);
+            thread.start();
+
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        System.out.println(buffer);
+        return buffer;
     }
 
     private static void writeToFile(String contents, int chunkSize, int numChunks) throws Exception {
         char[] buff = runSwapper(contents, chunkSize, contents.length() / chunkSize);
+        System.out.println(buff);
         PrintWriter writer = new PrintWriter("output.txt", "UTF-8");
         writer.print(buff);
         writer.close();
