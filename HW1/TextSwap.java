@@ -82,7 +82,7 @@ public class TextSwap {
             System.out.println(labels.get(i) + "  "  + indexPosition);
             System.out.println("New Interval:" + newIntervals[i].toString());
         }
-        char[] buffer = new char[chunkSize*numChunks];
+        char[] buffer = new char[(chunkSize*numChunks)];
         
         for (int i=0; i<numChunks; i++) {
             Swapper swapper = new Swapper(newIntervals[i], content, buffer, i*chunkSize);
@@ -96,6 +96,10 @@ public class TextSwap {
             }
         }
         System.out.println(buffer);
+
+        // for(int i=0; i<buffer.length; i++) {
+        //     System.out.println(String.format("i=%s, buffer[%s]=%s",i,i,buffer[i]));
+        // }
         return buffer;
     }
 
