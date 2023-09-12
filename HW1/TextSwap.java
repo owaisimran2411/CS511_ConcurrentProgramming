@@ -80,7 +80,7 @@ public class TextSwap {
             int indexPosition = labelToIndexMapper(labels.get(i));
             newIntervals[i] = new Interval(intervals[indexPosition].getX(), intervals[indexPosition].getY());
 
-            // debugging print Statements
+            // debugging print statements
             // System.out.println(labels.get(i) + "  "  + indexPosition);
             // System.out.println("New Interval:" + newIntervals[i].toString());
         }
