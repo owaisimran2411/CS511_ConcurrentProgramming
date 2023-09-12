@@ -21,14 +21,24 @@ public class Swapper implements Runnable {
          *  2. place the extracted content into the relevant index position range of buffer
          */
         char[] chunkData = content.substring(interval.getX(), interval.getY()+1).toCharArray();
-        System.out.println("Inside Swapper Function: " + offset);
-        System.out.println(chunkData);
+
+        // debugging print statements
+        // System.out.println("Inside Swapper Function: " + offset);
+        // System.out.println(chunkData);
 
         int chunkIndex = 0;
-        System.out.println(String.format("Loop Range: %s...%s", offset, (offset + (interval.getY() - interval.getX()))) );
+
+        // debugging print statements
+        // System.out.println(String.format("Loop Range: %s...%s", offset, (offset + (interval.getY() - interval.getX()))) );
+
+
         for(int i=offset; i<=(offset + (interval.getY() - interval.getX())); i++) {
-            System.out.println(String.format("chunkIndex=%s, chunkData[%s]=%s, buffer[%s]", chunkIndex, chunkIndex, chunkData[chunkIndex], i));
             buffer[i] = chunkData[chunkIndex];
+
+            // debugging print statements
+            // System.out.println(String.format("chunkIndex=%s, chunkData[%s]=%s, buffer[%s]=%s", chunkIndex, chunkIndex, chunkData[chunkIndex], i, this.buffer[i]));
+
+
             chunkIndex++;
         }
     }

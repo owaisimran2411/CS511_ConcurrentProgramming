@@ -79,8 +79,10 @@ public class TextSwap {
         for (int i=0; i<numChunks; i++) {
             int indexPosition = labelToIndexMapper(labels.get(i));
             newIntervals[i] = new Interval(intervals[indexPosition].getX(), intervals[indexPosition].getY());
-            System.out.println(labels.get(i) + "  "  + indexPosition);
-            System.out.println("New Interval:" + newIntervals[i].toString());
+
+            // debugging print Statements
+            // System.out.println(labels.get(i) + "  "  + indexPosition);
+            // System.out.println("New Interval:" + newIntervals[i].toString());
         }
         char[] buffer = new char[(chunkSize*numChunks)];
         
@@ -95,6 +97,7 @@ public class TextSwap {
                 e.printStackTrace();
             }
         }
+        System.out.print("Final Formatted String ===> ");
         System.out.println(buffer);
 
         // for(int i=0; i<buffer.length; i++) {
@@ -105,7 +108,6 @@ public class TextSwap {
 
     private static void writeToFile(String contents, int chunkSize, int numChunks) throws Exception {
         char[] buff = runSwapper(contents, chunkSize, contents.length() / chunkSize);
-        System.out.println(buff);
         PrintWriter writer = new PrintWriter("output.txt", "UTF-8");
         writer.print(buff);
         writer.close();
