@@ -1,9 +1,10 @@
 /*
  * Name: Muhammad Owais Imran
- * Course Code: CS511-A
+ * Course: CS511-A
  * Assignment: 01 (Threads)
  * Due Date: Sep 17th, 2023
- */
+*/
+
 import java.io.*;
 import java.util.*;
 
