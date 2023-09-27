@@ -1,6 +1,6 @@
 import java.util.concurrent.Semaphore
 
-Semaphore okA = new Semaphore(3)
+Semaphore okA = new Semaphore(2)
 Semaphore okBorC = new Semaphore(0)
 Semaphore mutex = new Semaphore(1)
 
