@@ -15,6 +15,10 @@ public class Bakery implements Runnable {
     private CountDownLatch doneSignal = new CountDownLatch(TOTAL_CUSTOMERS);
     // TODO
 
+    public Semaphore cashier;
+    public Semaphore customers;
+    public Semaphore[] breadShelves;
+
     /**
      * Remove a loaf from the available breads and restock if necessary
      */
@@ -51,5 +55,27 @@ public class Bakery implements Runnable {
         availableBread.put(BreadType.WONDER, FULL_BREAD);
 
         // TODO
+        cashier = new Semaphore(4);
+        customers = new Semaphore(50);
+
+        breadShelves = new Semaphore[3];
+        for(int i=0; i<3; i++) {
+            breadShelves[i] = new Semaphore(1);
+        }
+
+        executor = Executors.newFixedThreadPool(CAPACITY);
+        for(int i=0; i<TOTAL_CUSTOMERS; i++) {
+            Customer customer = new Customer(this, doneSignal);
+            executor.execute(customer);
+        }
+
+        try {
+            doneSignal.await();
+            System.out.printf(" Total sales = %.2f\n", sales);
+            executor.shutdown();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        
     }
 }

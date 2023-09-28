@@ -1,7 +1,10 @@
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Customer implements Runnable {
     private Bakery bakery;
@@ -16,6 +19,14 @@ public class Customer implements Runnable {
      */
     public Customer(Bakery bakery, CountDownLatch l) {
         // TODO
+        this.bakery = bakery;
+        this.doneSignal = l;
+
+        this.shoppingCart = new ArrayList<>();
+        this.rnd = new Random();
+        this.shopTime = rnd.nextInt(10)+10;
+        this.checkoutTime = rnd.nextInt(50)+20;
+        fillShoppingCart();
     }
 
     /**
@@ -23,6 +34,29 @@ public class Customer implements Runnable {
      */
     public void run() {
         // TODO
+        try {
+            Map<String, Integer> breadToIndexMap = new HashMap<>();
+            breadToIndexMap.put("RYE", 0);
+            breadToIndexMap.put("WONDER", 1);
+            breadToIndexMap.put("SOURDOUGH", 2);
+
+            Thread.sleep(shopTime);
+            for (int i=0; i<this.shoppingCart.size(); i++) {
+                this.bakery.breadShelves[ breadToIndexMap.get(shoppingCart.get(i).toString()) ].acquire();
+                this.bakery.takeBread(this.shoppingCart.get(i));
+                this.bakery.breadShelves[ breadToIndexMap.get(shoppingCart.get(i).toString()) ].release();
+            }
+
+            Thread.sleep(checkoutTime);
+
+            this.bakery.addSales(this.getItemsValue());
+            
+            doneSignal.countDown();
+            System.out.println("===== done execution ===");
+
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     /**
