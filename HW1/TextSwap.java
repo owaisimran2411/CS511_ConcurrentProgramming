@@ -27,7 +27,6 @@ public class TextSwap {
     }
 
     private static Interval[] getIntervals(int numChunks, int chunkSize) {
-        // TODO: Implement me!
 
         /* Steps to implement this getIntervals method 
             1. Initialize an array of Intervals type having length = numChunks
@@ -65,9 +64,7 @@ public class TextSwap {
 
     private static char[] runSwapper(String content, int chunkSize, int numChunks) {
         List<Character> labels = getLabels(numChunks);
-        Interval[] intervals = getIntervals(numChunks, chunkSize);
-        // TODO: Order the intervals properly, then run the Swapper instances.
-        
+        Interval[] intervals = getIntervals(numChunks, chunkSize);        
         /*
          * Steps for Implementation:
          *  1. Reordering the intervals variable based on new label mapping obtained
