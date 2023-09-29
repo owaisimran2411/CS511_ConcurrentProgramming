@@ -1,3 +1,10 @@
+/*
+ * Name: Muhammad Owais Imran
+ * Course: CS511-A
+ * Assignment: 02 (Semaphores)
+ * Due Date: Oct 1st, 2023
+*/
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -24,8 +31,8 @@ public class Customer implements Runnable {
 
         this.shoppingCart = new ArrayList<>();
         this.rnd = new Random();
-        this.shopTime = rnd.nextInt(10)+10;
-        this.checkoutTime = rnd.nextInt(50)+20;
+        this.shopTime = rnd.nextInt(10)+10;     // anywhere between 10-20ms
+        this.checkoutTime = rnd.nextInt(50)+20; // anywhere between 20-70ms
         fillShoppingCart();
     }
 
