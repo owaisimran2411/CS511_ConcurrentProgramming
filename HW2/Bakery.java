@@ -19,7 +19,7 @@ public class Bakery implements Runnable {
     private ExecutorService executor;
     private float sales = 0;
     private CountDownLatch doneSignal = new CountDownLatch(TOTAL_CUSTOMERS);
-    // TODO
+    
 
     public Semaphore cashier;
     public Semaphore customers;
@@ -60,7 +60,7 @@ public class Bakery implements Runnable {
         availableBread.put(BreadType.SOURDOUGH, FULL_BREAD);
         availableBread.put(BreadType.WONDER, FULL_BREAD);
 
-        // TODO
+        
         cashier = new Semaphore(4);
         customers = new Semaphore(50);
 

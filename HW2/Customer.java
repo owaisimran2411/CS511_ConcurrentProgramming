@@ -33,6 +33,7 @@ public class Customer implements Runnable {
         this.rnd = new Random();
         this.shopTime = rnd.nextInt(10)+10;     // anywhere between 10-20ms
         this.checkoutTime = rnd.nextInt(50)+20; // anywhere between 20-70ms
+        
         fillShoppingCart();
     }
 
@@ -59,7 +60,6 @@ public class Customer implements Runnable {
             this.bakery.addSales(this.getItemsValue());
             
             doneSignal.countDown();
-            System.out.println("===== done execution ===");
 
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
