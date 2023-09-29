@@ -25,7 +25,7 @@ public class Customer implements Runnable {
      * Initialize a customer object and randomize its shopping cart
      */
     public Customer(Bakery bakery, CountDownLatch l) {
-        // TODO
+        
         this.bakery = bakery;
         this.doneSignal = l;
 
@@ -41,7 +41,7 @@ public class Customer implements Runnable {
      * Run tasks for the customer
      */
     public void run() {
-        // TODO
+
         try {
             Map<String, Integer> breadToIndexMap = new HashMap<>();
             breadToIndexMap.put("RYE", 0);
