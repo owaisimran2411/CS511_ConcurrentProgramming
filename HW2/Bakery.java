@@ -69,10 +69,17 @@ public class Bakery implements Runnable {
             breadShelves[i] = new Semaphore(1);
         }
 
-        executor = Executors.newFixedThreadPool(CAPACITY);
+        executor = Executors.newFixedThreadPool(TOTAL_CUSTOMERS);
         for(int i=0; i<TOTAL_CUSTOMERS; i++) {
-            Customer customer = new Customer(this, doneSignal);
-            executor.execute(customer);
+            System.out.println("Customer: " + i);
+            try {
+                customers.acquire();
+                Customer customer = new Customer(this, doneSignal);
+                executor.execute(customer);
+                customers.release();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
 
         try {
