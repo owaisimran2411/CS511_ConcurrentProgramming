@@ -20,7 +20,16 @@ iterateOverContainers([ContainersListHead|ContainersListTail], ContainerID) ->
         ContainersListHead#container.id == ContainerID -> ContainersListHead;
         true -> iterateOverContainers(ContainersListTail, ContainerID)
     end,
-    Res. 
+    Res.
+
+iterateOverPorts([], _PortID) -> 
+    throw(error);
+iterateOverPorts([PortsListHead|PortsListTail], PortID) ->
+    Res = if
+        PortsListHead#port.id == PortID -> PortsListHead;
+        true -> iterateOverPorts(PortsListTail, PortID)
+    end,
+    Res.
 
 % Assignment Questions
 get_ship(Shipping_State, Ship_ID) ->
@@ -35,9 +44,11 @@ get_container(Shipping_State, Container_ID) ->
     % io:format("Implement me!!"),
     % error.
 
-% get_port(Shipping_State, Port_ID) ->
-%     io:format("Implement me!!"),
-%     error.
+get_port(Shipping_State, Port_ID) ->
+    Res = iterateOverPorts(Shipping_State#shipping_state.ports, Port_ID),
+    Res.
+    % io:format("Implement me!!"),
+    % error.
 
 % get_occupied_docks(Shipping_State, Port_ID) ->
 %     io:format("Implement me!!"),
