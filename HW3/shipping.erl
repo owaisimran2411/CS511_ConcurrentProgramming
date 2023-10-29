@@ -4,7 +4,7 @@
 -include_lib("./shipping.hrl").
 
 % Helper Methods
-iterateOverShips([], _Ship_ID) ->
+iterateOverShips([], _ShipID) ->
     throw(error);
 iterateOverShips([ShipListHead|ShipListTail], ShipID) -> 
     Res = if
@@ -13,6 +13,15 @@ iterateOverShips([ShipListHead|ShipListTail], ShipID) ->
     end,
     Res.
 
+iterateOverContainers([], _ContainerID) -> 
+    throw(error);
+iterateOverContainers([ContainersListHead|ContainersListTail], ContainerID) ->
+    Res = if
+        ContainersListHead#container.id == ContainerID -> ContainersListHead;
+        true -> iterateOverContainers(ContainersListTail, ContainerID)
+    end,
+    Res. 
+
 % Assignment Questions
 get_ship(Shipping_State, Ship_ID) ->
     Res = iterateOverShips(Shipping_State#shipping_state.ships, Ship_ID),
@@ -20,9 +29,11 @@ get_ship(Shipping_State, Ship_ID) ->
     % io:format("Implement me!!"),
     % error.
 
-% get_container(Shipping_State, Container_ID) ->
-%     io:format("Implement me!!"),
-%     error.
+get_container(Shipping_State, Container_ID) ->
+    Res = iterateOverContainers(Shipping_State#shipping_state.containers, Container_ID),
+    Res.
+    % io:format("Implement me!!"),
+    % error.
 
 % get_port(Shipping_State, Port_ID) ->
 %     io:format("Implement me!!"),
