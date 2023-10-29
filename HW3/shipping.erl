@@ -1,50 +1,64 @@
 -module(shipping).
 -compile(export_all).
+-compile(nowarn_export_all).
 -include_lib("./shipping.hrl").
 
+% Helper Methods
+iterateOverShips([], _Ship_ID) ->
+    throw(error);
+iterateOverShips([ShipListHead|ShipListTail], ShipID) -> 
+    Res = if
+        ShipListHead#ship.id == ShipID -> ShipListHead;
+        true -> iterateOverShips(ShipListTail, ShipID)
+    end,
+    Res.
+
+% Assignment Questions
 get_ship(Shipping_State, Ship_ID) ->
-    io:format("Implement me!!"),
-    error.
+    Res = iterateOverShips(Shipping_State#shipping_state.ships, Ship_ID),
+    Res.
+    % io:format("Implement me!!"),
+    % error.
 
-get_container(Shipping_State, Container_ID) ->
-    io:format("Implement me!!"),
-    error.
+% get_container(Shipping_State, Container_ID) ->
+%     io:format("Implement me!!"),
+%     error.
 
-get_port(Shipping_State, Port_ID) ->
-    io:format("Implement me!!"),
-    error.
+% get_port(Shipping_State, Port_ID) ->
+%     io:format("Implement me!!"),
+%     error.
 
-get_occupied_docks(Shipping_State, Port_ID) ->
-    io:format("Implement me!!"),
-    error.
+% get_occupied_docks(Shipping_State, Port_ID) ->
+%     io:format("Implement me!!"),
+%     error.
 
-get_ship_location(Shipping_State, Ship_ID) ->
-    io:format("Implement me!!"),
-    error.
+% get_ship_location(Shipping_State, Ship_ID) ->
+%     io:format("Implement me!!"),
+%     error.
 
-get_container_weight(Shipping_State, Container_IDs) ->
-    io:format("Implement me!!"),
-    error.
+% get_container_weight(Shipping_State, Container_IDs) ->
+%     io:format("Implement me!!"),
+%     error.
 
-get_ship_weight(Shipping_State, Ship_ID) ->
-    io:format("Implement me!!"),
-    error.
+% get_ship_weight(Shipping_State, Ship_ID) ->
+%     io:format("Implement me!!"),
+%     error.
 
-load_ship(Shipping_State, Ship_ID, Container_IDs) ->
-    io:format("Implement me!!"),
-    error.
+% load_ship(Shipping_State, Ship_ID, Container_IDs) ->
+%     io:format("Implement me!!"),
+%     error.
 
-unload_ship_all(Shipping_State, Ship_ID) ->
-    io:format("Implement me!!"),
-    error.
+% unload_ship_all(Shipping_State, Ship_ID) ->
+%     io:format("Implement me!!"),
+%     error.
 
-unload_ship(Shipping_State, Ship_ID, Container_IDs) ->
-    io:format("Implement me!!"),
-    error.
+% unload_ship(Shipping_State, Ship_ID, Container_IDs) ->
+%     io:format("Implement me!!"),
+%     error.
 
-set_sail(Shipping_State, Ship_ID, {Port_ID, Dock}) ->
-    io:format("Implement me!!"),
-    error.
+% set_sail(Shipping_State, Ship_ID, {Port_ID, Dock}) ->
+%     io:format("Implement me!!"),
+%     error.
 
 
 
