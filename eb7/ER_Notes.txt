@@ -1,0 +1,2 @@
+- Variable Start with an uppercase character
+- for pattern matching in a function use ; instead of . in all function calls
