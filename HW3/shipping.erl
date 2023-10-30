@@ -40,6 +40,15 @@ occupiedDockSearch([{P_ID, D_ID, _S_ID}|LocationsTail], PortID) ->
     end,
     Res.
 
+shipDockSearch([], _ShipID) ->
+    throw(err);
+shipDockSearch([{P_ID, D_ID, S_ID}|LocationsTail], ShipID) ->
+    Res = if
+        S_ID == ShipID -> {P_ID, D_ID};
+        true -> shipDockSearch(LocationsTail, ShipID)
+    end,
+    Res.
+
 % Assignment Questions
 get_ship(Shipping_State, Ship_ID) ->
     Res = iterateOverShips(Shipping_State#shipping_state.ships, Ship_ID),
@@ -64,9 +73,10 @@ get_occupied_docks(Shipping_State, Port_ID) ->
     % io:format("Implement me!!"),
     % error.
 
-% get_ship_location(Shipping_State, Ship_ID) ->
-%     io:format("Implement me!!"),
-%     error.
+get_ship_location(Shipping_State, Ship_ID) ->
+    shipDockSearch(Shipping_State#shipping_state.ship_locations, Ship_ID).
+    % io:format("Implement me!!"),
+    % error.
 
 % get_container_weight(Shipping_State, Container_IDs) ->
 %     io:format("Implement me!!"),
