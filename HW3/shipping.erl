@@ -89,9 +89,11 @@ get_container_weight(Shipping_State, Container_IDs) ->
     % io:format("Implement me!!"),
     % error.
 
-% get_ship_weight(Shipping_State, Ship_ID) ->
-%     io:format("Implement me!!"),
-%     error.
+get_ship_weight(Shipping_State, Ship_ID) ->
+    _Res = get_ship(Shipping_State, Ship_ID),
+    get_container_weight(Shipping_State, maps:get(Ship_ID, Shipping_State#shipping_state.ship_inventory)).
+    % io:format("Implement me!!"),
+    % error.
 
 % load_ship(Shipping_State, Ship_ID, Container_IDs) ->
 %     io:format("Implement me!!"),
