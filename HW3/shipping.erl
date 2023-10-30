@@ -49,6 +49,12 @@ shipDockSearch([{P_ID, D_ID, S_ID}|LocationsTail], ShipID) ->
     end,
     Res.
 
+sumOfContainerWeights([], _ContainersList) ->
+    0;
+sumOfContainerWeights([ContainerListHead|ContainerListTail], ContainersList) ->
+    Res = iterateOverContainers(ContainersList, ContainerListHead), 
+    Res#container.weight + sumOfContainerWeights(ContainerListTail, ContainersList).
+
 % Assignment Questions
 get_ship(Shipping_State, Ship_ID) ->
     Res = iterateOverShips(Shipping_State#shipping_state.ships, Ship_ID),
@@ -78,9 +84,10 @@ get_ship_location(Shipping_State, Ship_ID) ->
     % io:format("Implement me!!"),
     % error.
 
-% get_container_weight(Shipping_State, Container_IDs) ->
-%     io:format("Implement me!!"),
-%     error.
+get_container_weight(Shipping_State, Container_IDs) ->
+    sumOfContainerWeights(Container_IDs, Shipping_State#shipping_state.containers).
+    % io:format("Implement me!!"),
+    % error.
 
 % get_ship_weight(Shipping_State, Ship_ID) ->
 %     io:format("Implement me!!"),
