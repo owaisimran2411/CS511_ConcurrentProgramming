@@ -79,6 +79,21 @@ listSearch([H|T], Value) ->
         true -> H
     end.
 
+listSearchV([], _Value) ->
+    throwException(error);
+listSearchV([H|T], Value) ->
+    if
+        H == Value -> listSearch(T, Value);
+        true -> H
+    end.
+
+updateKey(Key, NewValue, Map) ->
+    UpdatedMap = maps:put(Key, NewValue, Map),
+    UpdatedMap.
+
+updateShipRecord(ShippingState, {NPInv, NSInv}) ->
+    #shipping_state{ships=ShippingState#shipping_state.ships, containers=ShippingState#shipping_state.containers, ports = ShippingState#shipping_state.ports, ship_locations = ShippingState#shipping_state.ship_locations, ship_inventory = NSInv, port_inventory = NPInv}.
+
 containerPortValidation([], _ShipPortNumber, _PortContainerList) ->
     0;
 containerPortValidation([H|T], ShipPortNumber, PortContainerList) ->
@@ -88,7 +103,7 @@ containerPortValidation([H|T], ShipPortNumber, PortContainerList) ->
 newAndPreLoadValidation([], _PreExistingContainers) ->
     0;
 newAndPreLoadValidation([H|T], PreExistingContainers) ->
-    listSearch(PreExistingContainers, H),
+    listSearchV(PreExistingContainers, H),
     newAndPreLoadValidation(T, PreExistingContainers).
 
 % Assignment Questions
@@ -145,7 +160,21 @@ load_ship(Shipping_State, Ship_ID, Container_IDs) ->
         true -> ok
     end,
     % 4. Container should not be pre loaded onto the ship
-    newAndPreLoadValidation(Container_IDs, maps:get(Ship_ID, Shipping_State#shipping_state.ship_inventory)).
+    newAndPreLoadValidation(Container_IDs, maps:get(Ship_ID, Shipping_State#shipping_state.ship_inventory)),
+
+    % creating a new shipping state object to return
+    % 1. update ship_location key in shipping_state record
+    % 2. update port_inventory in shipping_stae record
+    _NewPortInventory = maps:get(ShipPortNumber, Shipping_State#shipping_state.port_inventory) -- Container_IDs,
+    _UpdatePortInventoryMap = updateKey(ShipPortNumber, _NewPortInventory, Shipping_State#shipping_state.port_inventory),
+    _NewShipInventory = maps:get(Ship_ID, Shipping_State#shipping_state.ship_inventory) ++ Container_IDs,
+    _UpdateShipInventoryMap = updateKey(ShipPortNumber, _NewShipInventory, Shipping_State#shipping_state.ship_inventory),
+    updateShipRecord(Shipping_State, {_UpdatePortInventoryMap, _UpdateShipInventoryMap}).
+
+
+
+    % updating the record
+
     % io:format("Implement me!!"),
     % error.
 
