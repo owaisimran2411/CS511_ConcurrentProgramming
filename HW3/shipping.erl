@@ -178,9 +178,25 @@ load_ship(Shipping_State, Ship_ID, Container_IDs) ->
     % io:format("Implement me!!"),
     % error.
 
-% unload_ship_all(Shipping_State, Ship_ID) ->
-%     io:format("Implement me!!"),
-%     error.
+unload_ship_all(Shipping_State, Ship_ID) ->
+    ShipPortNumber = searchShipPortNumber(Shipping_State#shipping_state.ship_locations, Ship_ID),
+    PortContainerMaxCap = get_port(Shipping_State, ShipPortNumber),
+    ShipContainers = maps:get(Ship_ID, Shipping_State#shipping_state.ship_inventory),
+    CurrentPortInventory = maps:get(ShipPortNumber, Shipping_State#shipping_state.port_inventory),
+    ShipContainersCount = listLength(ShipContainers),
+    PortContainersCount = listLength(CurrentPortInventory),
+
+    if
+        ShipContainersCount + PortContainersCount < PortContainerMaxCap#port.container_cap + 1 -> ok;
+        true -> throw(error)
+    end,
+
+    _NewPortInventory = CurrentPortInventory ++ ShipContainers,
+    _UpdatePortInventoryMap = updateKey(ShipPortNumber, _NewPortInventory, Shipping_State#shipping_state.port_inventory),
+    _UpdateShipInventoryMap = updateKey(Ship_ID, [], Shipping_State#shipping_state.ship_inventory),
+    updateShipRecord(Shipping_State, {_UpdatePortInventoryMap, _UpdateShipInventoryMap}).
+    % io:format("Implement me!!"),
+    % error.
 
 % unload_ship(Shipping_State, Ship_ID, Container_IDs) ->
 %     io:format("Implement me!!"),
