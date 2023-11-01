@@ -55,6 +55,42 @@ sumOfContainerWeights([ContainerListHead|ContainerListTail], ContainersList) ->
     Res = iterateOverContainers(ContainersList, ContainerListHead), 
     Res#container.weight + sumOfContainerWeights(ContainerListTail, ContainersList).
 
+throwException(Error) ->
+    throw(Error).
+
+searchShipPortNumber([], _ShipID) ->
+    throwException(error);
+searchShipPortNumber([{P_ID, _D_ID, S_ID}|T], ShipID) -> 
+    if
+        S_ID /= ShipID -> searchShipPortNumber(T, ShipID);
+        true -> P_ID
+    end.
+
+listLength([]) -> 
+    0;
+listLength([_H|T]) ->
+    1+listLength(T).
+
+listSearch([], _Value) ->
+    throwException(error);
+listSearch([H|T], Value) ->
+    if
+        H /= Value -> listSearch(T, Value);
+        true -> H
+    end.
+
+containerPortValidation([], _ShipPortNumber, _PortContainerList) ->
+    0;
+containerPortValidation([H|T], ShipPortNumber, PortContainerList) ->
+    listSearch(PortContainerList, H),
+    containerPortValidation(T, ShipPortNumber, PortContainerList).
+    
+newAndPreLoadValidation([], _PreExistingContainers) ->
+    0;
+newAndPreLoadValidation([H|T], PreExistingContainers) ->
+    listSearch(PreExistingContainers, H),
+    newAndPreLoadValidation(T, PreExistingContainers).
+
 % Assignment Questions
 get_ship(Shipping_State, Ship_ID) ->
     Res = iterateOverShips(Shipping_State#shipping_state.ships, Ship_ID),
@@ -95,9 +131,23 @@ get_ship_weight(Shipping_State, Ship_ID) ->
     % io:format("Implement me!!"),
     % error.
 
-% load_ship(Shipping_State, Ship_ID, Container_IDs) ->
-%     io:format("Implement me!!"),
-%     error.
+load_ship(Shipping_State, Ship_ID, Container_IDs) ->
+    % 1. Containers to be loaded and ship port must be same
+    ShipPortNumber = searchShipPortNumber(Shipping_State#shipping_state.ship_locations, Ship_ID),
+    containerPortValidation(Container_IDs, ShipPortNumber, maps:get(ShipPortNumber, Shipping_State#shipping_state.port_inventory)),
+    % 2. Ship ID should exist
+    ShipData = get_ship(Shipping_State, Ship_ID),
+    % 3. Ship should not overload
+    NCL = listLength(Container_IDs),
+    ECL = listLength(maps:get(Ship_ID, Shipping_State#shipping_state.ship_inventory)),
+    if 
+        NCL + ECL - 1 > ShipData#ship.container_cap -> throwException(error);
+        true -> ok
+    end,
+    % 4. Container should not be pre loaded onto the ship
+    newAndPreLoadValidation(Container_IDs, maps:get(Ship_ID, Shipping_State#shipping_state.ship_inventory)).
+    % io:format("Implement me!!"),
+    % error.
 
 % unload_ship_all(Shipping_State, Ship_ID) ->
 %     io:format("Implement me!!"),
