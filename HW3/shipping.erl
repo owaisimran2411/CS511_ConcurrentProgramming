@@ -106,6 +106,19 @@ newAndPreLoadValidation([H|T], PreExistingContainers) ->
     listSearchV(PreExistingContainers, H),
     newAndPreLoadValidation(T, PreExistingContainers).
 
+searchSupport([],  _Key) ->
+    throwException(error);
+searchSupport([H|T], Key) ->
+    if
+        H == Key -> Key;
+        true -> searchSupport(T, Key)
+    end.
+existingAndUnloadContainerComparison(_ShipContainers, []) -> 
+    [];
+existingAndUnloadContainerComparison(ShipContainers, [H|T]) ->
+    searchSupport(ShipContainers, H),
+    existingAndUnloadContainerComparison(ShipContainers, T).
+
 % Assignment Questions
 get_ship(Shipping_State, Ship_ID) ->
     Res = iterateOverShips(Shipping_State#shipping_state.ships, Ship_ID),
@@ -198,7 +211,26 @@ unload_ship_all(Shipping_State, Ship_ID) ->
     % io:format("Implement me!!"),
     % error.
 
-% unload_ship(Shipping_State, Ship_ID, Container_IDs) ->
+unload_ship(Shipping_State, Ship_ID, Container_IDs) ->
+    _ShipPortNumber = searchShipPortNumber(Shipping_State#shipping_state.ship_locations, Ship_ID),
+    _ShipContainers = maps:get(Ship_ID, Shipping_State#shipping_state.ship_inventory),
+    _ContainersToBeUnloaded = existingAndUnloadContainerComparison(_ShipContainers, Container_IDs),
+    _CurrentContainersAtPort = maps:get(_ShipPortNumber, Shipping_State#shipping_state.port_inventory),
+
+    _ContainersToBeUnloadedLength = listLength(_ContainersToBeUnloaded),
+    _CurrentContainersAtPortLength = listLength(_CurrentContainersAtPort),
+    PortContainerMaxCap = get_port(Shipping_State, _ShipPortNumber),
+
+    if
+        _ContainersToBeUnloadedLength + _CurrentContainersAtPortLength < PortContainerMaxCap+1 -> throwException(error);
+        true -> ok
+    end,
+
+    _NewPortInventory = _CurrentContainersAtPort ++ Container_IDs,
+    _UpdatePortInventoryMap = updateKey(_ShipPortNumber, _NewPortInventory, Shipping_State#shipping_state.port_inventory),
+    _UpdateShipInventoryMap = updateKey(Ship_ID, _ShipContainers -- Container_IDs, Shipping_State#shipping_state.ship_inventory),
+    updateShipRecord(Shipping_State, {_UpdatePortInventoryMap, _UpdateShipInventoryMap}).
+    
 %     io:format("Implement me!!"),
 %     error.
 
