@@ -91,6 +91,8 @@ updateKey(Key, NewValue, Map) ->
     UpdatedMap = maps:put(Key, NewValue, Map),
     UpdatedMap.
 
+updateShipRecord(ShippingState, {NSL}) ->
+    #shipping_state{ships=ShippingState#shipping_state.ships, containers=ShippingState#shipping_state.containers, ports = ShippingState#shipping_state.ports, ship_locations = NSL, ship_inventory = ShippingState#shipping_state.ship_inventory, port_inventory = ShippingState#shipping_state.port_inventory};
 updateShipRecord(ShippingState, {NPInv, NSInv}) ->
     #shipping_state{ships=ShippingState#shipping_state.ships, containers=ShippingState#shipping_state.containers, ports = ShippingState#shipping_state.ports, ship_locations = ShippingState#shipping_state.ship_locations, ship_inventory = NSInv, port_inventory = NPInv}.
 
@@ -118,6 +120,22 @@ existingAndUnloadContainerComparison(_ShipContainers, []) ->
 existingAndUnloadContainerComparison(ShipContainers, [H|T]) ->
     searchSupport(ShipContainers, H),
     existingAndUnloadContainerComparison(ShipContainers, T).
+
+checkIfDockAndPortAreAvailable([], _PID, _DID) ->
+    0;
+checkIfDockAndPortAreAvailable([{_PID, _DID, _SID}|T], PortID, DockID) -> 
+    if
+        PortID == _PID andalso _DID == DockID -> throwException(error);
+        true -> checkIfDockAndPortAreAvailable(T, PortID, DockID)
+    end.
+
+checkIfShipIsAtTheSameDestination([], _PortID, _DockID, _ShipID) ->
+    0;
+checkIfShipIsAtTheSameDestination([{_PID, _DID, _SID}|T], PortID, DockID, ShipID) -> 
+    if
+        PortID == _PID andalso _DID == DockID andalso _SID == ShipID -> throwException(error);
+        true -> checkIfShipIsAtTheSameDestination(T, PortID, DockID, ShipID)
+    end.
 
 % Assignment Questions
 get_ship(Shipping_State, Ship_ID) ->
@@ -234,7 +252,18 @@ unload_ship(Shipping_State, Ship_ID, Container_IDs) ->
 %     io:format("Implement me!!"),
 %     error.
 
-% set_sail(Shipping_State, Ship_ID, {Port_ID, Dock}) ->
+
+updateLocation([], _ShipID, _NPortID, _NDockID) ->
+    [];
+updateLocation([{PID, DID, SID}|T], ShipID, NPortID, NDockID) ->
+    if
+        SID == ShipID -> [{NPortID, NDockID, SID}] ++ updateLocation(T, ShipID, NPortID, NDockID);
+        true -> [{PID, DID, SID}] ++ updateLocation(T, ShipID, NPortID, NDockID)
+    end.
+set_sail(Shipping_State, Ship_ID, {Port_ID, Dock}) ->
+    checkIfDockAndPortAreAvailable(Shipping_State#shipping_state.ship_locations, Port_ID, Dock),
+    checkIfShipIsAtTheSameDestination(Shipping_State#shipping_state.ship_locations, Port_ID, Dock, Ship_ID),
+    updateShipRecord(Shipping_State, {updateLocation(Shipping_State#shipping_state.ship_locations, Ship_ID, Port_ID, Dock)}).
 %     io:format("Implement me!!"),
 %     error.
 
