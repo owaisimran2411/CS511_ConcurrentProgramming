@@ -1,3 +1,6 @@
+% Name: Muhammad Owais Imran
+% HW: 03
+
 -module(shipping).
 -compile(export_all).
 -compile(nowarn_export_all).
