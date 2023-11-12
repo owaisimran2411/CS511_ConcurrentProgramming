@@ -77,8 +77,15 @@ do_join(ChatName, ClientPID, Ref, State) ->
 
 %% executes leave protocol from server perspective
 do_leave(ChatName, ClientPID, Ref, State) ->
-    io:format("server:do_leave(...): IMPLEMENT ME~n"),
-    State.
+	CurrentChatrooms = State#serv_st.chatrooms,
+	ChatPID = maps:get(ChatName, CurrentChatrooms),
+	CurrentRegistration = State#serv_st.registrations,
+	UpdatedChatClientState = State#serv_st{registrations = maps:update(ChatName, lists:delete(ClientPID, maps:get(ChatName, CurrentRegistration)), CurrentRegistration)},
+	ChatPID ! {self(), Ref, unregister, ClientPID},
+	ClientPID ! {self(), Ref, chat_leave_acknowledgement},
+	UpdatedChatClientState.
+    % io:format("server:do_leave(...): IMPLEMENT ME~n"),
+    % State.
 
 %% executes new nickname protocol from server perspective
 do_new_nick(State, Ref, ClientPID, NewNick) ->
