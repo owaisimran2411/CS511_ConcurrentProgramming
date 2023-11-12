@@ -40,21 +40,43 @@ end,
 
 %% This function should register a new client to this chatroom
 do_register(State, Ref, ClientPID, ClientNick) ->
-    io:format("chatroom:do_register(...): IMPLEMENT ME~n"),
-    State.
+	CurrentRegistration = State#chat_st.registrations,
+	RegistrationsUpdated = State#chat_st{registrations = maps:put(ClientPID, ClientNick, CurrentRegistration)},
+	ClientPID!{self(), Ref, connect, RegistrationsUpdated#chat_st.history},
+	RegistrationsUpdated.
+    % io:format("chatroom:do_register(...): IMPLEMENT ME~n"),
+    % State.
 
 %% This function should unregister a client from this chatroom
 do_unregister(State, ClientPID) ->
-    io:format("chatroom:do_unregister(...): IMPLEMENT ME~n"),
-    State.
+	CurrentRegistration = State#chat_st.registrations,
+	RegistrationsUpdated = State#chat_st{registrations = maps:remove(ClientPID, CurrentRegistration)},
+	RegistrationsUpdated.
+    % io:format("chatroom:do_unregister(...): IMPLEMENT ME~n"),
+    % State.
 
 %% This function should update the nickname of specified client.
 do_update_nick(State, ClientPID, NewNick) ->
-    io:format("chatroom:do_update_nick(...): IMPLEMENT ME~n"),
-    State.
+	CurrentRegistration = State#chat_st.registrations,
+	RegistrationsUpdated = State#chat_st{registrations = maps:update(ClientPID, NewNick, CurrentRegistration)},
+	RegistrationsUpdated.
+    % io:format("chatroom:do_update_nick(...): IMPLEMENT ME~n"),
+    % State.
 
 %% This function should update all clients in chatroom with new message
 %% (read assignment specs for details)
 do_propegate_message(State, Ref, ClientPID, Message) ->
-    io:format("chatroom:do_propegate_message(...): IMPLEMENT ME~n"),
-    State.
+	CurrentRegistration = State#chat_st.registrations,
+	Sender = maps:get(ClientPID, CurrentRegistration),
+	lists:map(fun (Receiver) ->
+			Receiver ! {request, self(), Ref, 
+				{incoming_msg, Sender, State#chat_st.name, Message}
+			}
+		end,
+		lists:filter(fun (PID) -> not (PID == ClientPID) end, maps:keys(CurrentRegistration))
+	),
+	ClientPID!{self(), Ref, message_send_acknowledgement},
+	State#chat_st{history = State#chat_st.history ++ [{Sender, Message}]}.
+
+    % io:format("chatroom:do_propegate_message(...): IMPLEMENT ME~n"),
+    % State.
