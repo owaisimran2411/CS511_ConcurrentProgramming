@@ -40,30 +40,21 @@ end,
 
 %% This function should register a new client to this chatroom
 do_register(State, Ref, ClientPID, ClientNick) ->
-    Registrations = State#chat_st.registrations,
-    NewState = State#chat_st{registrations = maps:put(ClientPID,ClientNick,Registrations)},
-    ClientPID ! {self(), Ref, connect, NewState#chat_st.history},
-    NewState.
+    io:format("chatroom:do_register(...): IMPLEMENT ME~n"),
+    State.
 
 %% This function should unregister a client from this chatroom
 do_unregister(State, ClientPID) ->
-    State#chat_st{registrations = maps:remove(ClientPID, State#chat_st.registrations)}.
+    io:format("chatroom:do_unregister(...): IMPLEMENT ME~n"),
+    State.
 
 %% This function should update the nickname of specified client.
 do_update_nick(State, ClientPID, NewNick) ->
-    State#chat_st{registrations = maps:update(ClientPID, NewNick, State#chat_st.registrations)}.
+    io:format("chatroom:do_update_nick(...): IMPLEMENT ME~n"),
+    State.
 
 %% This function should update all clients in chatroom with new message
 %% (read assignment specs for details)
 do_propegate_message(State, Ref, ClientPID, Message) ->
-    Registrations = State#chat_st.registrations,
-    SenderNickname = maps:get(ClientPID,Registrations),
-    lists:map(fun (Reciever) -> 
-            Reciever ! {request, self(), Ref, 
-                {incoming_msg,SenderNickname,State#chat_st.name,Message}
-            }
-        end,
-        lists:filter(fun (PID) -> not (PID == ClientPID) end, maps:keys(Registrations))
-    ),
-    ClientPID ! {self(), Ref, ack_msg},
-    State#chat_st{history = State#chat_st.history ++ [{SenderNickname,Message}]}.
+    io:format("chatroom:do_propegate_message(...): IMPLEMENT ME~n"),
+    State.
