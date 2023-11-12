@@ -126,18 +126,37 @@ do_join(State, Ref, ChatName) ->
 
 %% executes `/leave` protocol from client perspective
 do_leave(State, Ref, ChatName) ->
-    io:format("client:do_leave(...): IMPLEMENT ME~n"),
-    {{dummy_target, dummy_response}, State}.
+    ClientCurrentChats = State#cl_st.con_ch,
+    case maps:find(ChatName, ClientCurrentChats) of
+        error -> {err, State};
+        {ok, _ChatID} ->
+            whereis(server)!{self(), Ref, leave, ChatName},
+            receive
+                {_From, Ref, chat_leave_acknowledgement} -> {ok, State#cl_st{con_ch = maps:remove(ChatName, ClientCurrentChats)}}
+            end
+    end.
+    % io:format("client:do_leave(...): IMPLEMENT ME~n"),
+    % {{dummy_target, dummy_response}, State}.
 
 %% executes `/nick` protocol from client perspective
 do_new_nick(State, Ref, NewNick) ->
-    io:format("client:do_new_nick(...): IMPLEMENT ME~n"),
-    {{dummy_target, dummy_response}, State}.
+    CurrentNickName = State#cl_st.nick,
+    if 
+        CurrentNickName == NewNick -> {err_same, State};
+        true ->
+            whereis(server)!{self(), Ref, nick, NewNick},
+            receive
+                {_From, Ref, duplicate_nick_name} -> {duplicate_nick_name, State};
+                {_From, Ref, nickname_update_acknowledgement} -> {nickname_update_acknowledgement, State#cl_st{nick = NewNick}}
+            end
+    end.
+    % io:format("client:do_new_nick(...): IMPLEMENT ME~n"),
+    % {{dummy_target, dummy_response}, State}.
 
 %% executes send message protocol from client perspective
 do_msg_send(State, Ref, ChatName, Message) ->
-    io:format("client:do_new_nick(...): IMPLEMENT ME~n"),
-    {{dummy_target, dummy_response}, State}.
+    % io:format("client:do_new_nick(...): IMPLEMENT ME~n"),
+    % {{dummy_target, dummy_response}, State}.
 
 %% executes new incoming message protocol from client perspective
 do_new_incoming_msg(State, _Ref, CliNick, ChatName, Msg) ->
