@@ -155,6 +155,14 @@ do_new_nick(State, Ref, NewNick) ->
 
 %% executes send message protocol from client perspective
 do_msg_send(State, Ref, ChatName, Message) ->
+    ClientConnectedChats = State#cl_st.con_ch,
+    CurrentChatRoomID = maps:get(ChatName, ClientConnectedChats),
+    ClientNick = State#cl_st.nick,
+    CurrentChatRoomID!{self(), Ref, message, Message},
+    receive
+        {CurrentChatRoomID, Ref, message_send_acknowledgement} -> {{msg_sent_successful, ClientNick}, State};
+        _ -> {err, State}
+    end.
     % io:format("client:do_new_nick(...): IMPLEMENT ME~n"),
     % {{dummy_target, dummy_response}, State}.
 
@@ -166,5 +174,9 @@ do_new_incoming_msg(State, _Ref, CliNick, ChatName, Msg) ->
 
 %% executes quit protocol from client perspective
 do_quit(State, Ref) ->
-    io:format("client:do_new_nick(...): IMPLEMENT ME~n"),
-    {{dummy_target, dummy_response}, State}.
+    whereis(server)!{self(), Ref, quit},
+    receive
+        {_From, Ref, quit_acknowledgement} -> {quit_acknowledgement, State}
+    end.
+    % io:format("client:do_new_nick(...): IMPLEMENT ME~n"),
+    % {{dummy_target, dummy_response}, State}.
