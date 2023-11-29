@@ -132,7 +132,7 @@ do_leave(State, Ref, ChatName) ->
         {ok, _ChatID} ->
             whereis(server)!{self(), Ref, leave, ChatName},
             receive
-                {_From, Ref, chat_leave_acknowledgement} -> {ok, State#cl_st{con_ch = maps:remove(ChatName, ClientCurrentChats)}}
+                {_From, Ref, ack_leave} -> {ok, State#cl_st{con_ch = maps:remove(ChatName, ClientCurrentChats)}}
             end
     end.
     % io:format("client:do_leave(...): IMPLEMENT ME~n"),
@@ -146,8 +146,8 @@ do_new_nick(State, Ref, NewNick) ->
         true ->
             whereis(server)!{self(), Ref, nick, NewNick},
             receive
-                {_From, Ref, duplicate_nick_name} -> {duplicate_nick_name, State};
-                {_From, Ref, nickname_update_acknowledgement} -> {nickname_update_acknowledgement, State#cl_st{nick = NewNick}}
+                {_From, Ref, err_nick_used} -> {err_nick_used, State};
+                {_From, Ref, ok_nick} -> {ok_nick, State#cl_st{nick = NewNick}}
             end
     end.
     % io:format("client:do_new_nick(...): IMPLEMENT ME~n"),
@@ -160,7 +160,7 @@ do_msg_send(State, Ref, ChatName, Message) ->
     ClientNick = State#cl_st.nick,
     CurrentChatRoomID!{self(), Ref, message, Message},
     receive
-        {CurrentChatRoomID, Ref, message_send_acknowledgement} -> {{msg_sent_successful, ClientNick}, State};
+        {CurrentChatRoomID, Ref, ack_msg} -> {{msg_sent, ClientNick}, State};
         _ -> {err, State}
     end.
     % io:format("client:do_new_nick(...): IMPLEMENT ME~n"),
@@ -176,7 +176,7 @@ do_new_incoming_msg(State, _Ref, CliNick, ChatName, Msg) ->
 do_quit(State, Ref) ->
     whereis(server)!{self(), Ref, quit},
     receive
-        {_From, Ref, quit_acknowledgement} -> {quit_acknowledgement, State}
+        {_From, Ref, ack_quit} -> {ack_quit, State}
     end.
     % io:format("client:do_new_nick(...): IMPLEMENT ME~n"),
     % {{dummy_target, dummy_response}, State}.

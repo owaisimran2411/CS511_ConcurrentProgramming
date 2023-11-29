@@ -82,17 +82,63 @@ do_leave(ChatName, ClientPID, Ref, State) ->
 	CurrentRegistration = State#serv_st.registrations,
 	UpdatedChatClientState = State#serv_st{registrations = maps:update(ChatName, lists:delete(ClientPID, maps:get(ChatName, CurrentRegistration)), CurrentRegistration)},
 	ChatPID ! {self(), Ref, unregister, ClientPID},
-	ClientPID ! {self(), Ref, chat_leave_acknowledgement},
+	ClientPID ! {self(), Ref, ack_leave},
 	UpdatedChatClientState.
     % io:format("server:do_leave(...): IMPLEMENT ME~n"),
     % State.
 
 %% executes new nickname protocol from server perspective
+helper_nicknames(State, Ref, ClientPID, NewNick, Chatroom) ->
+	case maps:find(Chatroom, State#serv_st.registrations) of 
+        {ok, ClientPIDs} -> 
+            case lists:any(fun(X) -> X == ClientPID end, ClientPIDs) of 
+                true -> case maps:find(Chatroom, State#serv_st.chatrooms) of 
+                            {ok, ChatroomPID} -> ChatroomPID!{self(), Ref, update_nick, ClientPID, NewNick}
+                        end;
+                false -> pass
+            end
+    end.
 do_new_nick(State, Ref, ClientPID, NewNick) ->
-    io:format("server:do_new_nick(...): IMPLEMENT ME~n"),
-    State.
+	CurrentNickNames = maps:values(State#serv_st.nicks),
+	case lists:any(fun(N) -> N == NewNick end, CurrentNickNames) of
+		false ->
+			UpdatedServState = State#serv_st{nicks = maps:update(ClientPID, NewNick, State#serv_st.nicks)},
+			CurrentChatRooms = maps:keys(State#serv_st.chatrooms),
+			lists:map(fun(X) -> helper_nicknames(State, Ref, ClientPID, NewNick, X) end, CurrentChatRooms),
+			ClientPID!{self(), Ref, ok_nick};
+		true -> 
+			ClientPID!{self(), Ref, err_nick_used},
+			UpdatedServState = State
+	end,
+	UpdatedServState.
+
+    % io:format("server:do_new_nick(...): IMPLEMENT ME~n"),
+    % State.
 
 %% executes client quit protocol from server perspective
+helper_quit(State, Ref, ClientPID, Chatroom) ->
+	 case maps:find(Chatroom, State#serv_st.registrations) of 
+        {ok, ClientPIDs} -> 
+            case lists:any(fun(X) -> X == ClientPID end, ClientPIDs) of 
+                true -> case maps:find(Chatroom, State#serv_st.chatrooms) of 
+                            {ok, ChatroomPID} -> ChatroomPID!{self(), Ref, unregister, ClientPID}
+                        end;
+                false -> pass
+            end
+    end.
 do_client_quit(State, Ref, ClientPID) ->
-    io:format("server:do_client_quit(...): IMPLEMENT ME~n"),
-    State.
+	UpdatedNicknames = maps:remove(ClientPID, State#serv_st.nicks),
+	CurrentRegistrations = State#serv_st.registrations,
+	CurrentChatrooms = maps:keys(State#serv_st.chatrooms),
+	UpdatedRegistrations = maps:map(
+			fun(X, Y) when is_list(X) ->
+				lists:delete(ClientPID, Y) end, CurrentRegistrations
+		),
+	lists:map(
+			fun(X) ->
+				helper_quit(State, Ref, ClientPID, X) end, CurrentChatrooms
+		),
+	ClientPID!{self(), Ref, ack_quit},
+	State#serv_st{registrations = UpdatedRegistrations, nicks = UpdatedNicknames}.
+    % io:format("server:do_client_quit(...): IMPLEMENT ME~n"),
+    % State.

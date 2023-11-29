@@ -75,7 +75,7 @@ do_propegate_message(State, Ref, ClientPID, Message) ->
 		end,
 		lists:filter(fun (PID) -> not (PID == ClientPID) end, maps:keys(CurrentRegistration))
 	),
-	ClientPID!{self(), Ref, message_send_acknowledgement},
+	ClientPID!{self(), Ref, ack_msg},
 	State#chat_st{history = State#chat_st.history ++ [{Sender, Message}]}.
 
     % io:format("chatroom:do_propegate_message(...): IMPLEMENT ME~n"),

@@ -163,7 +163,7 @@ do_quit(ClientPID, Ref) ->
     ClientPID!{request, self(), Ref, quit},
     %% waits for client to tell us we're welcome to quit
     receive
-	{ClientPID, Ref, ack_quit} -> 
+	{result, ClientPID, Ref, ack_quit} -> 
 	    exit(normal)
     end.
 
