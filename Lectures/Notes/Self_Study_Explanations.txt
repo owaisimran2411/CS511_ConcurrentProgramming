@@ -1,0 +1,89 @@
+CONCURRENT PROGRAMMING - EXERCISE BOOKLET#1 PRACTICE QUESTION 5 DRY RUN 
+
+STATE FORMAT: (IP_P,IP_Q,n,local_P,local_Q)
+-> P3,Q3,0,?,?
+-> P5(1),Q3,0,0,? ; HERE n=0 and local_P=0
+-> P5(1),Q5(1),0,0,0 ; HERE n=0 and local_Q=0
+-> P5(1),Q6(1),1,0,0 ; HERE n=1 and local_Q=0
+-> P5(1),Q5(2),1,0,1 ; HERE n=1 and local_Q=1
+-> P5(1),Q6(2),2,0,1 ; HERE n=2 and local_Q=1
+-> P5(1),Q5(3),2,0,2 ; HERE n=2 and local_Q=2
+-> P5(1),Q6(3),3,0,2 ; HERE n=3 and local_Q=2
+-> P5(1),Q5(4),3,0,3 ; HERE n=3 and local_Q=3
+-> P5(1),Q6(4),4,0,3 ; HERE n=4 and local_Q=3
+-> P5(1),Q5(5),4,0,4 ; HERE n=4 and local_Q=4
+-> P5(1),-,5,0,4 	 ; HERE n=5 and local_Q=4
+-> P6(1),-,1,0,4	 ; HERE n=1 and local_P=0
+-> P5(2),-,1,1,4     ; HERE n=5 and local_Q=4
+-> P6(2),-,2,1,4	 ; HERE n=5 and local_Q=4
+-> P5(3),-,2,2,4	 ; HERE n=5 and local_Q=4
+-> P6(3),-,3,2,4	 ; HERE n=5 and local_Q=4
+-> P5(4),-,3,3,4	 ; HERE n=5 and local_Q=4
+-> P6(4),-,4,3,4	 ; HERE n=5 and local_Q=4
+-> P5(5),-,4,4,4	 ; HERE n=5 and local_Q=4
+-> -,-,5,4,4		 ; HERE n=5 and local_Q=4
+
+
+CONCURRENT PROGRAMMING - EXERCISE BOOKLET#1 PRACTICE QUESTION 8 DRY RUN 
+
+i -> Execution path in which loop in the thread on left is executed exactly once
+
+-> P3,Q3,0
+-> P4,Q3,0
+-> P3,Q3,1
+-> -,Q3,1
+-> -,Q4,1
+-> ..... TO CONTINUE TILL N<0 FOR THREAD ON RIGHT TO FINISH EXECUTION
+
+ii -> Execution Path in which thread on the left is executed exactly three times
+
+-> P3,Q3,0
+-> P4,Q3,0
+-> P3,Q3,1
+-> P3,Q4,1
+-> P3,Q3,0
+-> P4,Q3,0
+-> P3,Q3,1
+-> P3,Q4,1
+-> P3,Q3,0
+-> P4,Q3,0
+-> P3,Q3,1
+-> -,Q3,1
+-> ........ TO CONTINUE TILL N<0 FOR THREAD ON RIGHT TO FINISH EXECUTION
+
+iii -> complete execution of each thread one by one (like P completes execution of a single iteration, then Q completes its one iteration, and the cycle continues infinitely)
+
+
+CONCURRENT PROGRAMMING - EXERCISE BOOKLET#2 PRACTICE QUESTION # 6 DRY RUN 
+
+-> P4,Q16,0,0,?,?
+-> P6,Q16,0,0,?,?
+-> P7,Q16,0,0,1,?	// AVOID REPLACING THE VALUE FOR NP WITH THE NEW VALUE IN LOCAL, CONTEXT SWITCH TO PROCESS Q
+-> P7,Q18,0,0,1,?
+-> P7,Q19,0,0,1,1
+-> P8,Q19,1,0,1,1	// WRITING THE VALUE OF LOCAL INTO NP, CONTEXT SWITCH TO PROCESS P
+
+CONCURRENT PROGRAMMING - EXERCISE BOOKLET#2 PRACTICE QUESTION # 7 DRY RUN
+
+ASSUME THREE THREADS P,Q,R
+
+-> CHOOSING = [F,F,F]
+-> TICKET = [0,0,0]
+
+-> P6,Q6,R6,[F,F,F],[0,0,0],?,?,?
+-> P7,Q6,R6,[T,F,F],[0,0,0],?,?,?
+-> P7,Q7,R6,[T,T,F],[0,0,0],?,?,?
+-> P7,Q7,R7,[T,T,T],[0,0,0],?,?,?
+-> P8,Q7,R7,[T,T,T],[0,0,0],1,?,?
+-> P9,Q7,R7,[T,T,T],[1,0,0],1,?,?
+-> P9,Q8,R7,[T,T,T],[1,0,0],1,2,?
+-> P9,Q8,R8,[T,T,T],[1,0,0],1,2,2
+-> P9,Q9,R8,[T,T,T],[1,2,0],1,2,2
+-> P9,Q9,R9,[T,T,T],[1,2,2],1,2,2
+-> P10,Q9,R9,[F,T,T],[1,2,2],1,2,2
+-> P10,Q10,R9,[F,F,T],[1,2,2],1,2,2
+-> P10,Q10,R10,[F,F,F],[1,2,2],1,2,2
+-> P11,Q10,R10,[F,F,F],[1,2,2],1,2,2
+-> P11,Q11,R10,[F,F,F],[1,2,2],1,2,2
+-> P11,Q11,R11,[F,F,F],[1,2,2],1,2,2
+-> P12
